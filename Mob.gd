@@ -1,5 +1,8 @@
 extends KinematicBody
 
+#signal when player jumped on mob
+signal squashed
+
 # minimum speed of mob in m/s
 export var min_speed = 10
 # mximum speed of mob in m/s
@@ -10,7 +13,7 @@ var velocity = Vector3.ZERO
 func _physics_process(delta):
 	move_and_slide(velocity)
 
-func initializer(start_position, player_position):
+func initialize(start_position, player_position):
 	
 	#position mob to players positon and turn it so that it looks at player
 	look_at_from_position(start_position, player_position, Vector3.UP)
@@ -23,6 +26,13 @@ func initializer(start_position, player_position):
 	velocity = Vector3.FORWARD * random_speed
 	#rotate it based onmob's Y rotation to move in the direction its lookinh
 	velocity = velocity.rotated(Vector3.UP, rotation.y)
+	
+	$AnimationPlayer.playback_speed = random_speed / min_speed
+
+
+func squash():
+	emit_signal("squashed")
+	queue_free()
 
 func _on_VisibilityNotifier_screen_exited():
 	queue_free()
